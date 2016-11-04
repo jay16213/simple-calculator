@@ -74,12 +74,8 @@
     text-align: center;
 }
 
-.btn {
-    display: inline-block;
-    margin: 10px;
-}
-
-.btn input {
+button {
+    margin: 5px;
     font-size: 20px;
     text-align: center;
     vertical-align: center;
