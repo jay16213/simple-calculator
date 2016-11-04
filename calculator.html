@@ -5,6 +5,7 @@
     <meta charset="utf-8">
     <link rel="icon" type="image/png" href="icon.png"/><!--page icon-->
     <link rel="stylesheet" type="text/css" href="style.css"/>
+    <script type="text/javascript" src="calc.js"></script>
 </head>
 <body>
     <div id="calc">
@@ -18,70 +19,70 @@
         </div>
         
         <!---hex---->
-        <div class="show">
+        <div class="show" id="hex">
             <h4>HEX</h4>
             <input type="text" name="hex" value="0">
         </div>
         
         <!---dec---->
-        <div class="show">
+        <div class="show" id="dec">
             <h4>DEC</h4>
             <input type="text" name="dec" value="0">
         </div>
         
         <!---oct---->
-        <div class="show">
+        <div class="show" id="oct">
             <h4>OCT</h4>
             <input type="text" name="oct" value="0">
         </div>
         
         <!---bin---->
-        <div class="show">
+        <div class="show" id="bin">
             <h4>BIN</h4>
             <input type="text" name="bin" value="0">
         </div>
 
         <!--button-->
-        <div id="btn_group">
+        <div class="btn_group">
             <div class="btn_row">
-              <div class="btn"><input type="button" value="&nbsp;"></div>
-              <div class="btn"><input type="button" value="Mod"></div>
-              <div class="btn"><input type="button" value="CE"></div>
-              <div class="btn"><input type="button" value="C"></div>
-              <div class="btn"><input type="button" value="&larr;"></div>
-              <div class="btn"><input type="button" value="/"></div>
+              <button>&nbsp;</button>
+              <button>Mod</button>
+              <button>CE</button>
+              <button>C</button>
+              <button>&larr;</button>
+              <button>/</button>
             </div>
             <div class="btn_row">
-              <div class="btn"><input type="button" value="A"></div>
-              <div class="btn"><input type="button" value="B"></div>
-              <div class="btn"><input type="button" value="7"></div>
-              <div class="btn"><input type="button" value="8"></div>
-              <div class="btn"><input type="button" value="9"></div>
-              <div class="btn"><input type="button" value="*"></div>
+              <button>A</button>
+              <button>B</button>
+              <button>7</button>
+              <button>8</button>
+              <button>9</button>
+              <button>*</button>
             </div>
             <div class="btn_row">
-              <div class="btn"><input type="button" value="C"></div>
-              <div class="btn"><input type="button" value="D"></div>
-              <div class="btn"><input type="button" value="4"></div>
-              <div class="btn"><input type="button" value="5"></div>
-              <div class="btn"><input type="button" value="6"></div>
-              <div class="btn"><input type="button" value="-"></div>
+              <button>C</button>
+              <button>D</button>
+              <button>4</button>
+              <button>5</button>
+              <button>6</button>
+              <button>-</button>
             </div>
             <div class="btn_row">
-              <div class="btn"><input type="button" value="E"></div>
-              <div class="btn"><input type="button" value="F"></div>
-              <div class="btn"><input type="button" value="1"></div>
-              <div class="btn"><input type="button" value="2"></div>
-              <div class="btn"><input type="button" value="3"></div>
-              <div class="btn"><input type="button" value="+"></div>
+              <button>E</button>
+              <button>F</button>
+              <button>1</button>
+              <button>2</button>
+              <button>3</button>
+              <button>+</button>
             </div>
             <div class="btn_row">
-              <div class="btn"><input type="button" value="&nbsp;"></div>
-              <div class="btn"><input type="button" value="&nbsp;"></div>
-              <div class="btn"><input type="button" value="&plusmn;"></div>
-              <div class="btn"><input type="button" value="0"></div>
-              <div class="btn"><input type="button" value="&nbsp;"></div>
-              <div class="btn"><input type="button" value="="></div>
+              <button>&nbsp;</button>
+              <button>&nbsp;</button>
+              <button>&plusmn;</button>
+              <button>0</button>
+              <button>&nbsp;</button>
+              <button>=</button>
             </div>
         </div>
     </form>
