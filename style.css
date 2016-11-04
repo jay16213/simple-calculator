@@ -61,10 +61,9 @@
 }
 
 /*button*/
-#btn_group {
+.btn_group {
     position: relative;
     top: 1px;
-    right: 5.5px;
     margin: auto;
 }
 
