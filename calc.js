@@ -1,42 +1,61 @@
-window.onload = function() {
+const IDLE = 0, OP = 1, ANS = 2;//OP = operation
+var curState = IDLE;
+
+window.onload = function () {
     var btns = document.querySelectorAll('button');
-    const INIT = 0, ANS = 1, EX = 2;
-    var curState = INIT;
     
-    for(var i = 0; i < btns.length; i++) {
-        btns[i].onclick = function(e) {
-            var display = document.querySelector('#main');
-            var equation = display.value;
-            var btnVal = this;
+    for (var i = 0; i < btns.length; i++) {
+        btns[i].onclick = function (e) {
+            //get display elements
+            var main = document.querySelector('#main');
+            var hex = document.querySelector('#hex');
+            var dec = document.querySelector('#dec');
+            var oct = document.querySelector('#oct');
+            var bin = document.querySelector('#bin');
             
-            if(btnVal.innerHTML == 'C' || btnVal.innerHTML == 'CE') {
-                display.value = '0';
-                initialize();
-                curState = INIT;
+            var equation = main.value;
+            var btnVal = this.value;
+            
+            //clear the screen
+            if (btnVal == 'init') {
+                init(main, hex, dec, oct, bin);
+                curState = IDLE;
             }
-            else if(btnVal.innerHTML == '=') {
-                if(equation != '') {
-                    display.value = eval(equation);
-                    carrySystem(Number(display.value));
+            
+            //compute the ans
+            else if (btnVal == '=') {
+                if (equation != '') {
+                    main.value = eval(equation);
+                    //change the ans to different carry systems
+                    carrySystem(Number(main.value), hex, dec, oct, bin);
                     curState = ANS;
                 }
             }
-            else if(btnVal.innerHTML == '&plusmn;') {
-                if(Number(display.value) != NaN)
-                    display.value = -display.value;
-            }
+            
+            //backspace button
+            else if (btnVal == 'back')
+                main.value = main.value.substr(0, main.value.length - 1);
+            
+            //change the sign of number
+            else if (btnVal == 'neg')
+                changeSign(main);
+            
+            //add value to screen
             else {
-                if(curState == INIT || curState == ANS) {
-                    display.value = "";
-                    curState = EX;
-                }
                 
-                if(btnVal.innerHTML == 'Mod')
-                    display.value += '%'
-                else if(btnVal.value == "back")
-                    display.value.substr(0, display.value.length - 1);
+                //control the main screen
+                displayController(main, btnVal);
+
+                //any two operators shouldn't be placed continuously
+                if (isOperator(btnVal)) {
+                    if (!isOperator(equation[equation.length - 1]))
+                        if (main.value != '')//avoid invalid equation
+                            main.value += btnVal;
+                        else if (main.value == '' && btnVal == '-')
+                            main.value += btnVal;
+                }
                 else
-                    display.value += btnVal.innerHTML;
+                    main.value += btnVal;//just put the number
             }
             //prevent page jumps;
             e.preventDefault();
@@ -44,24 +63,43 @@ window.onload = function() {
     }
 };
 
-function initialize() {
-    var hex = document.querySelector('#hex');
-    var dec = document.querySelector('#dec');
-    var oct = document.querySelector('#oct');
-    var bin = document.querySelector('#bin');
+function displayController (main, btnVal) {
+    if(curState == IDLE) {
+        main.value = '';//if curState is IDLE, clear the screen
+        curState = OP;//change state to OP
+    }
+    else if(curState == ANS) {
+        if(isNum(btnVal)) main.value = '';
+        curState = OP;
+    }
+}
+
+function init (main, hex, dec, oct, bin) {
+    main.value = '0';
     hex.value = '0';
     dec.value = '0';
     oct.value = '0';
     bin.value = '0';
 }
 
-function carrySystem(mainVal) {
-    var hex = document.querySelector('#hex');
-    var dec = document.querySelector('#dec');
-    var oct = document.querySelector('#oct');
-    var bin = document.querySelector('#bin');
-    hex.value = mainVal.toString(16);
-    dec.value = mainVal;
-    oct.value = mainVal.toString(8);
-    bin.value = mainVal.toString(2);
+//change the ans to different carry systems(2,8,16)
+function carrySystem (ans, hex, dec, oct, bin) {
+    hex.value = ans.toString(16);
+    dec.value = ans;
+    oct.value = ans.toString(8);
+    bin.value = ans.toString(2);
+}
+
+function changeSign (main) {
+    if(!isNaN(main.value))
+        main.value = -main.value;
+}
+
+function isOperator (btnVal) {
+    return btnVal == '+' || btnVal == '-' || btnVal == '*'
+            || btnVal == '/' || btnVal == '%';
+}
+
+function isNum (btnVal) {
+    return (btnVal >= '0' && btnVal <= 9) || (btnVal >= 'A' && btnVal <= 'F');
 }
