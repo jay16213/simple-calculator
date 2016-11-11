@@ -127,21 +127,52 @@ function computeAns(equation) {
     }
 }
 
-function computeInHex(e) {
-    var tmp_e = e;
+function computeInHex(equation) {
     var e = '';
-
     var tmp_num = '';
-    for(var i = 0; i < tmp_e.length; i++) {
-        if(isOperator(tmp_e[i])) {
+    
+    for(var i = 0; i < equation.length; i++) {
+        if(isOperator(equation[i])) {
             //change tmp_num(16-base) to a 10-base integer, then convert to string
             //because the parameter of eval must be a string
-            e += parseInt(tmp_num, 16).toString() + tmp_e[i];
-            tmp_num = '';
+            e += parseInt(tmp_num, 16).toString() + equation[i];
+            tmp_num = '';//clear
         }
-        else tmp_num += tmp_e[i];
+        else tmp_num += equation[i];
     }
-    e += parseInt(tmp_num, 16).toString();//add the last number
+    e += parseInt(tmp_num, 16).toString();//attach the last number
+    
+    return eval(e);
+}
+
+function computeInOct(equation) {
+    var e = '';
+    var tmp_num = '';
+    
+    for(var i = 0; i < equation.length; i++) {
+        if(isOperator(equation[i])) {
+            e += parseInt(tmp_num, 8).toString() + equation[i];
+            tmp_num = '';//clear
+        }
+        else tmp_num += equation[i];
+    }
+    e += parseInt(tmp_num, 8).toString();//attach the last number
+    
+    return eval(e);
+}
+
+function computeInBin(equation) {
+    var e = '';
+    var tmp_num = '';
+    
+    for(var i = 0; i < equation.length; i++) {
+        if(isOperator(equation[i])) {
+            e += parseInt(tmp_num, 2).toString() + equation[i];
+            tmp_num = '';//clear
+        }
+        else tmp_num += equation[i];
+    }
+    e += parseInt(tmp_num, 2).toString();//attach the last number
     
     return eval(e);
 }
