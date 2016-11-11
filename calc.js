@@ -1,5 +1,7 @@
 const IDLE = 0, OP = 1, ANS = 2;//OP = operation
+const HEX = 16, DEC = 10, OCT = 8, BIN = 2;
 var curState = IDLE;
+var CARRY = DEC;
 
 window.onload = function () {
     var btns = document.querySelectorAll('button');
@@ -18,16 +20,18 @@ window.onload = function () {
             
             //clear the screen
             if (btnVal == 'init') {
-                init(main, hex, dec, oct, bin);
+                init();
                 curState = IDLE;
             }
             
             //compute the ans
             else if (btnVal == '=') {
                 if (equation != '') {
-                    main.value = eval(equation);
+                    computeAns(equation);
                     //change the ans to different carry systems
-                    carrySystem(Number(main.value), hex, dec, oct, bin);
+                    carrySystem(Number(main.value));
+                    //main value should display with present carry system
+                    mainValController();
                     curState = ANS;
                 }
             }
@@ -38,13 +42,13 @@ window.onload = function () {
             
             //change the sign of number
             else if (btnVal == 'neg')
-                changeSign(main);
+                changeSign();
             
             //add value to screen
             else {
                 
                 //control the main screen
-                displayController(main, btnVal);
+                displayController(btnVal);
 
                 //any two operators shouldn't be placed continuously
                 if (isOperator(btnVal)) {
@@ -63,18 +67,23 @@ window.onload = function () {
     }
 };
 
-function displayController (main, btnVal) {
-    if(curState == IDLE) {
-        main.value = '';//if curState is IDLE, clear the screen
-        curState = OP;//change state to OP
-    }
-    else if(curState == ANS) {
-        if(isNum(btnVal)) main.value = '';
-        curState = OP;
+function mainValController() {
+    switch(CARRY) {
+        case DEC: break;
+        case HEX: main.value = hex.value; break;
+        case OCT: main.value = oct.value; break;
+        case BIN: main.value = bin.value; break;
     }
 }
 
-function init (main, hex, dec, oct, bin) {
+function displayController (btnVal) {
+    if(curState == IDLE) main.value = '';
+    else if(curState == ANS && isNum(btnVal)) main.value = '';
+
+    curState = OP;
+}
+
+function init () {
     main.value = '0';
     hex.value = '0';
     dec.value = '0';
@@ -83,23 +92,56 @@ function init (main, hex, dec, oct, bin) {
 }
 
 //change the ans to different carry systems(2,8,16)
-function carrySystem (ans, hex, dec, oct, bin) {
+function carrySystem (ans) {
     hex.value = ans.toString(16);
     dec.value = ans;
     oct.value = ans.toString(8);
     bin.value = ans.toString(2);
 }
 
-function changeSign (main) {
+function changeSign () {
     if(!isNaN(main.value))
         main.value = -main.value;
 }
 
 function isOperator (btnVal) {
-    return btnVal == '+' || btnVal == '-' || btnVal == '*'
-            || btnVal == '/' || btnVal == '%';
+    return btnVal == '+' || btnVal == '-' || btnVal == '*' || btnVal == '/' || btnVal == '%';
 }
 
 function isNum (btnVal) {
-    return (btnVal >= '0' && btnVal <= 9) || (btnVal >= 'A' && btnVal <= 'F');
+    return (btnVal >= '0' && btnVal <= '9') || (btnVal >= 'A' && btnVal <= 'F');
+}
+
+function setCarry(new_carry) {
+    CARRY = new_carry;
+    alert("You have changed the carry system to " + CARRY);
+    init();
+}
+
+function computeAns(equation) {
+    switch(CARRY) {
+        case DEC: main.value = eval(equation); break;
+        case HEX: main.value = computeInHex(equation); break;
+        case OCT: main.value = computeInOct(equation); break;
+        case BIN: main.value = computeInBin(equation); break;
+    }
+}
+
+function computeInHex(e) {
+    var tmp_e = e;
+    var e = '';
+
+    var tmp_num = '';
+    for(var i = 0; i < tmp_e.length; i++) {
+        if(isOperator(tmp_e[i])) {
+            //change tmp_num(16-base) to a 10-base integer, then convert to string
+            //because the parameter of eval must be a string
+            e += parseInt(tmp_num, 16).toString() + tmp_e[i];
+            tmp_num = '';
+        }
+        else tmp_num += tmp_e[i];
+    }
+    e += parseInt(tmp_num, 16).toString();//add the last number
+    
+    return eval(e);
 }
