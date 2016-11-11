@@ -5,7 +5,6 @@ var CARRY = DEC;
 
 window.onload = function () {
     var btns = document.querySelectorAll('button');
-    
     for (var i = 0; i < btns.length; i++) {
         btns[i].onclick = function (e) {
             //get display elements
@@ -58,7 +57,7 @@ window.onload = function () {
                         else if (main.value == '' && btnVal == '-')
                             main.value += btnVal;
                 }
-                else
+                else if(isValidButton(btnVal))
                     main.value += btnVal;//just put the number
             }
             //prevent page jumps;
@@ -116,6 +115,7 @@ function setCarry(new_carry) {
     CARRY = new_carry;
     alert("You have changed the carry system to " + CARRY);
     init();
+    curState = IDLE;
 }
 
 function computeAns(equation) {
@@ -175,4 +175,17 @@ function computeInBin(equation) {
     e += parseInt(tmp_num, 2).toString();//attach the last number
     
     return eval(e);
+}
+
+function isValidButton(btnVal) {
+    switch(CARRY) {
+        case HEX:
+            return true;
+        case DEC:
+            return btnVal >= '0' && btnVal <= '9';
+        case OCT:
+            return btnVal >= '0' && btnVal <= '7';
+        case BIN:
+            return btnVal >= '0' && btnVal <= '1';
+    }
 }
