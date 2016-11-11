@@ -28,9 +28,7 @@ window.onload = function () {
                 if (equation != '') {
                     computeAns(equation);
                     //change the ans to different carry systems
-                    carrySystem(Number(main.value));
-                    //main value should display with present carry system
-                    mainValController();
+                    carrySystem(main.value);
                     curState = ANS;
                 }
             }
@@ -54,33 +52,20 @@ window.onload = function () {
                     if (!isOperator(equation[equation.length - 1]))
                         if (main.value != '')//avoid invalid equation
                             main.value += btnVal;
-                        else if (main.value == '' && btnVal == '-')
+                        else if (main.value == '' && btnVal == '-')//negative number
                             main.value += btnVal;
                 }
-                else if(isValidButton(btnVal))
+                else if(isValidButton(btnVal)) {
                     main.value += btnVal;//just put the number
+                    //change number to different carry system if possible
+                    if(Number(main.value != NaN)) carrySystem(main.value);
+                }
             }
             //prevent page jumps;
             e.preventDefault();
         }
     }
 };
-
-function mainValController() {
-    switch(CARRY) {
-        case DEC: break;
-        case HEX: main.value = hex.value; break;
-        case OCT: main.value = oct.value; break;
-        case BIN: main.value = bin.value; break;
-    }
-}
-
-function displayController (btnVal) {
-    if(curState == IDLE) main.value = '';
-    else if(curState == ANS && isNum(btnVal)) main.value = '';
-
-    curState = OP;
-}
 
 function init () {
     main.value = '0';
@@ -90,12 +75,45 @@ function init () {
     bin.value = '0';
 }
 
+function displayController (btnVal) {
+    if(curState == IDLE) main.value = '';
+    else if(curState == ANS && isNum(btnVal)) main.value = '';
+
+    curState = OP;
+}
+
 //change the ans to different carry systems(2,8,16)
 function carrySystem (ans) {
-    hex.value = ans.toString(16);
-    dec.value = ans;
-    oct.value = ans.toString(8);
-    bin.value = ans.toString(2);
+    switch(CARRY) {
+        case HEX:
+            var num = parseInt(ans, HEX);
+            hex.value = num.toString(HEX);
+            dec.value = num.toString(DEC);
+            oct.value = num.toString(OCT);
+            bin.value = num.toString(BIN);
+            break;
+        case DEC:
+            var num = parseInt(ans, DEC);
+            hex.value = num.toString(HEX);
+            dec.value = num.toString(DEC);
+            oct.value = num.toString(OCT);
+            bin.value = num.toString(BIN);
+            break;
+        case OCT:
+            var num = parseInt(ans, OCT);
+            hex.value = num.toString(HEX);
+            dec.value = num.toString(DEC);
+            oct.value = num.toString(OCT);
+            bin.value = num.toString(BIN);
+            break;
+        case BIN:
+            var num = parseInt(ans, BIN);
+            hex.value = num.toString(HEX);
+            dec.value = num.toString(DEC);
+            oct.value = num.toString(OCT);
+            bin.value = num.toString(BIN);
+            break;
+    }
 }
 
 function changeSign () {
@@ -131,61 +149,66 @@ function computeInHex(equation) {
     var e = '';
     var tmp_num = '';
     
-    for(var i = 0; i < equation.length; i++) {
+    if(equation[0] == '-') e += equation[0];//if the first operand is negative
+    else tmp_num += equation[0];//otherwise, just put number in tmp_num
+    
+    for(var i = 1; i < equation.length; i++) {
         if(isOperator(equation[i])) {
-            //change tmp_num(16-base) to a 10-base integer, then convert to string
+            //change tmp_num(N-base) to a 10-base integer, then convert to string
             //because the parameter of eval must be a string
-            e += parseInt(tmp_num, 16).toString() + equation[i];
+            e += parseInt(tmp_num, HEX).toString(DEC) + equation[i];
             tmp_num = '';//clear
         }
         else tmp_num += equation[i];
     }
-    e += parseInt(tmp_num, 16).toString();//attach the last number
+    e += parseInt(tmp_num, HEX).toString(DEC);//attach the last number
     
-    return eval(e);
+    return Number(eval(e)).toString(HEX);
 }
 
 function computeInOct(equation) {
     var e = '';
     var tmp_num = '';
     
-    for(var i = 0; i < equation.length; i++) {
+    if(equation[0] == '-') e += equation[0];
+    else tmp_num += equation[0];
+    
+    for(var i = 1; i < equation.length; i++) {
         if(isOperator(equation[i])) {
-            e += parseInt(tmp_num, 8).toString() + equation[i];
+            e += parseInt(tmp_num, OCT).toString(DEC) + equation[i];
             tmp_num = '';//clear
         }
         else tmp_num += equation[i];
     }
-    e += parseInt(tmp_num, 8).toString();//attach the last number
+    e += parseInt(tmp_num, OCT).toString();//attach the last number
     
-    return eval(e);
+    return Number(eval(e)).toString(OCT);
 }
 
 function computeInBin(equation) {
     var e = '';
     var tmp_num = '';
     
-    for(var i = 0; i < equation.length; i++) {
+    if(equation[0] == '-') e += equation[0];
+    else tmp_num += equation[0];
+    
+    for(var i = 1; i < equation.length; i++) {
         if(isOperator(equation[i])) {
-            e += parseInt(tmp_num, 2).toString() + equation[i];
+            e += parseInt(tmp_num, BIN).toString(DEC) + equation[i];
             tmp_num = '';//clear
         }
         else tmp_num += equation[i];
     }
-    e += parseInt(tmp_num, 2).toString();//attach the last number
+    e += parseInt(tmp_num, BIN).toString(DEC);//attach the last number
     
-    return eval(e);
+    return Number(eval(e)).toString(BIN);
 }
 
 function isValidButton(btnVal) {
     switch(CARRY) {
-        case HEX:
-            return true;
-        case DEC:
-            return btnVal >= '0' && btnVal <= '9';
-        case OCT:
-            return btnVal >= '0' && btnVal <= '7';
-        case BIN:
-            return btnVal >= '0' && btnVal <= '1';
+        case HEX: return true;
+        case DEC: return btnVal >= '0' && btnVal <= '9';
+        case OCT: return btnVal >= '0' && btnVal <= '7';
+        case BIN: return btnVal >= '0' && btnVal <= '1';
     }
 }
