@@ -24,6 +24,7 @@
     position: relative;
     right: 30px;
     text-align: right;
+    margin: auto;
 }
 
 .show h4 {
@@ -31,7 +32,16 @@
     display: inline-block;
     right: 120px;
     margin: 10px;
+    color: white;
+    background-color: #0055FF;
+    border-radius: 2px;
+    border-color: blue;
 }
+
+h4:hover {
+    background-color: skyblue;  
+}
+
 .show input {
     position: relative;
     display:inline-block;
