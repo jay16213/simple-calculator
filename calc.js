@@ -1,10 +1,11 @@
-const IDLE = 0, OP = 1, ANS = 2;//OP = operation
-const HEX = 16, DEC = 10, OCT = 8, BIN = 2;
+const IDLE = 0, OP = 1, ANS = 2;//the state for calculator, OP = operation
+const HEX = 16, DEC = 10, OCT = 8, BIN = 2;//present carry system
 var curState = IDLE;
 var CARRY = DEC;
 
 window.onload = function () {
     var btns = document.querySelectorAll('button');
+    
     for (var i = 0; i < btns.length; i++) {
         btns[i].onclick = function (e) {
             //get display elements
@@ -27,6 +28,7 @@ window.onload = function () {
             else if (btnVal == '=') {
                 if (equation != '') {
                     computeAns(equation);
+                    
                     //change the ans to different carry systems
                     carrySystem(main.value);
                     curState = ANS;
@@ -38,8 +40,10 @@ window.onload = function () {
                 main.value = main.value.substr(0, main.value.length - 1);
             
             //change the sign of number
-            else if (btnVal == 'neg')
+            else if (btnVal == 'neg') {
                 changeSign();
+                carrySystem(main.value);
+            }
             
             //add value to screen
             else {
@@ -56,10 +60,12 @@ window.onload = function () {
                             main.value += btnVal;
                 }
                 else if(isValidButton(btnVal)) {
-                    main.value += btnVal;//just put the number
+                    main.value += btnVal;
+                    
                     //change number to different carry system if possible
-                    if(Number(main.value != NaN)) carrySystem(main.value);
+                    if(Number(main.value) != NaN) carrySystem(main.value);
                 }
+                else alert("Shouldn't input " + btnVal + " in carry system " + CARRY);
             }
             //prevent page jumps;
             e.preventDefault();
@@ -75,6 +81,7 @@ function init () {
     bin.value = '0';
 }
 
+//check if necessary to clear the screen
 function displayController (btnVal) {
     if(curState == IDLE) main.value = '';
     else if(curState == ANS && isNum(btnVal)) main.value = '';
@@ -82,7 +89,7 @@ function displayController (btnVal) {
     curState = OP;
 }
 
-//change the ans to different carry systems(2,8,16)
+//change the number to different carry systems(2,8,16)
 function carrySystem (ans) {
     switch(CARRY) {
         case HEX:
@@ -116,9 +123,17 @@ function carrySystem (ans) {
     }
 }
 
+//positive to negative or negative to positive
 function changeSign () {
-    if(!isNaN(main.value))
-        main.value = -main.value;
+    //if main.value is a number, not an equation
+    if(main.value.indexOf("+") == -1 && main.value.indexOf("-") <= 0 && 
+    main.value.indexOf("*") == -1 && main.value.indexOf("/") == -1 && main.value.indexOf("%") == -1) {
+        
+        //hex contains english char, so we have to change it to an integer first
+        if(CARRY == HEX)
+            main.value = (-parseInt(main.value, HEX)).toString(HEX);
+        else main.value = -main.value;
+    }
 }
 
 function isOperator (btnVal) {
@@ -129,6 +144,7 @@ function isNum (btnVal) {
     return (btnVal >= '0' && btnVal <= '9') || (btnVal >= 'A' && btnVal <= 'F');
 }
 
+//set carry system
 function setCarry(new_carry) {
     CARRY = new_carry;
     alert("You have changed the carry system to " + CARRY);
@@ -136,6 +152,7 @@ function setCarry(new_carry) {
     curState = IDLE;
 }
 
+//compute ans in present carry system
 function computeAns(equation) {
     switch(CARRY) {
         case DEC: main.value = eval(equation); break;
@@ -163,7 +180,7 @@ function computeInHex(equation) {
     }
     e += parseInt(tmp_num, HEX).toString(DEC);//attach the last number
     
-    return Number(eval(e)).toString(HEX);
+    return Number(eval(e)).toString(HEX);//change ans to present carry system
 }
 
 function computeInOct(equation) {
@@ -204,6 +221,8 @@ function computeInBin(equation) {
     return Number(eval(e)).toString(BIN);
 }
 
+//detect if the number is valid in the carry system
+//ex. shouldn't input 'A' in dec system
 function isValidButton(btnVal) {
     switch(CARRY) {
         case HEX: return true;
