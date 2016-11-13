@@ -18,10 +18,19 @@ window.onload = function () {
             var equation = main.value;
             var btnVal = this.value;
             
-            //clear the screen
+            //button C
             if (btnVal == 'init') {
                 init();
                 curState = IDLE;
+            }
+            
+            //button CE
+            else if(btnVal == 'clear') {
+                while(main.value != '' && !isOperator(main.value[main.value.length-1]))
+                    back();
+                
+                if(main.value == '-')//negative number
+                    back();
             }
             
             //compute the ans
@@ -37,7 +46,7 @@ window.onload = function () {
             
             //backspace button
             else if (btnVal == 'back')
-                main.value = main.value.substr(0, main.value.length - 1);
+                back();
             
             //change the sign of number
             else if (btnVal == 'neg') {
@@ -134,6 +143,10 @@ function changeSign () {
             main.value = (-parseInt(main.value, HEX)).toString(HEX);
         else main.value = -main.value;
     }
+}
+
+function back() {
+    main.value = main.value.substr(0, main.value.length - 1);
 }
 
 function isOperator (btnVal) {
