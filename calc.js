@@ -71,8 +71,8 @@ window.onload = function () {
                 else if(isValidButton(btnVal)) {
                     main.value += btnVal;
                     
-                    //change number to different carry system if possible
-                    if(Number(main.value) != NaN) carrySystem(main.value);
+                    //convert number to different carry system if possible
+                    carrySystem(main.value);
                 }
                 else alert("Shouldn't input " + btnVal + " in carry system " + CARRY);
             }
@@ -88,6 +88,7 @@ function init () {
     dec.value = '0';
     oct.value = '0';
     bin.value = '0';
+    curState = IDLE;
 }
 
 //check if necessary to clear the screen
@@ -98,37 +99,14 @@ function displayController (btnVal) {
     curState = OP;
 }
 
-//change the number to different carry systems(2,8,16)
+//convert the number to different carry systems(2,8,16) if ans is a valid number
 function carrySystem (ans) {
-    switch(CARRY) {
-        case HEX:
-            var num = parseInt(ans, HEX);
-            hex.value = num.toString(HEX);
-            dec.value = num.toString(DEC);
-            oct.value = num.toString(OCT);
-            bin.value = num.toString(BIN);
-            break;
-        case DEC:
-            var num = parseInt(ans, DEC);
-            hex.value = num.toString(HEX);
-            dec.value = num.toString(DEC);
-            oct.value = num.toString(OCT);
-            bin.value = num.toString(BIN);
-            break;
-        case OCT:
-            var num = parseInt(ans, OCT);
-            hex.value = num.toString(HEX);
-            dec.value = num.toString(DEC);
-            oct.value = num.toString(OCT);
-            bin.value = num.toString(BIN);
-            break;
-        case BIN:
-            var num = parseInt(ans, BIN);
-            hex.value = num.toString(HEX);
-            dec.value = num.toString(DEC);
-            oct.value = num.toString(OCT);
-            bin.value = num.toString(BIN);
-            break;
+    if(Number(ans) != NaN) {
+        var num = parseInt(ans, CARRY);
+        hex.value = num.toString(HEX);
+        dec.value = num.toString(DEC);
+        oct.value = num.toString(OCT);
+        bin.value = num.toString(BIN);
     }
 }
 
@@ -137,11 +115,7 @@ function changeSign () {
     //if main.value is a number, not an equation
     if(main.value.indexOf("+") == -1 && main.value.indexOf("-") <= 0 && 
     main.value.indexOf("*") == -1 && main.value.indexOf("/") == -1 && main.value.indexOf("%") == -1) {
-        
-        //hex contains english char, so we have to change it to an integer first
-        if(CARRY == HEX)
-            main.value = (-parseInt(main.value, HEX)).toString(HEX);
-        else main.value = -main.value;
+        main.value = (-parseInt(main.value, CARRY)).toString(CARRY);
     }
 }
 
@@ -159,23 +133,26 @@ function isNum (btnVal) {
 
 //set carry system
 function setCarry(new_carry) {
-    CARRY = new_carry;
+    if(Number(main.value) != NaN) {//if there is a number, convert it to new_carry system
+        main.value = parseInt(main.value, CARRY).toString(new_carry);
+    }
+    else init();//otherwise, init the screen
+    
+    CARRY = new_carry;//set carry
+    carrySystem(main.value);
+
     alert("You have changed the carry system to " + CARRY);
-    init();
-    curState = IDLE;
 }
 
 //compute ans in present carry system
 function computeAns(equation) {
     switch(CARRY) {
         case DEC: main.value = eval(equation); break;
-        case HEX: main.value = computeInHex(equation); break;
-        case OCT: main.value = computeInOct(equation); break;
-        case BIN: main.value = computeInBin(equation); break;
+        default: main.value = computeInCarry(equation); break;
     }
 }
 
-function computeInHex(equation) {
+function computeInCarry(equation) {
     var e = '';
     var tmp_num = '';
     
@@ -185,53 +162,14 @@ function computeInHex(equation) {
     for(var i = 1; i < equation.length; i++) {
         if(isOperator(equation[i])) {
             //change tmp_num(N-base) to a 10-base integer, then convert to string
-            //because the parameter of eval must be a string
-            e += parseInt(tmp_num, HEX).toString(DEC) + equation[i];
+            e += parseInt(tmp_num, CARRY).toString(DEC) + equation[i];
             tmp_num = '';//clear
         }
         else tmp_num += equation[i];
     }
-    e += parseInt(tmp_num, HEX).toString(DEC);//attach the last number
+    e += parseInt(tmp_num, CARRY).toString(DEC);//attach the last number
     
-    return Number(eval(e)).toString(HEX);//change ans to present carry system
-}
-
-function computeInOct(equation) {
-    var e = '';
-    var tmp_num = '';
-    
-    if(equation[0] == '-') e += equation[0];
-    else tmp_num += equation[0];
-    
-    for(var i = 1; i < equation.length; i++) {
-        if(isOperator(equation[i])) {
-            e += parseInt(tmp_num, OCT).toString(DEC) + equation[i];
-            tmp_num = '';//clear
-        }
-        else tmp_num += equation[i];
-    }
-    e += parseInt(tmp_num, OCT).toString();//attach the last number
-    
-    return Number(eval(e)).toString(OCT);
-}
-
-function computeInBin(equation) {
-    var e = '';
-    var tmp_num = '';
-    
-    if(equation[0] == '-') e += equation[0];
-    else tmp_num += equation[0];
-    
-    for(var i = 1; i < equation.length; i++) {
-        if(isOperator(equation[i])) {
-            e += parseInt(tmp_num, BIN).toString(DEC) + equation[i];
-            tmp_num = '';//clear
-        }
-        else tmp_num += equation[i];
-    }
-    e += parseInt(tmp_num, BIN).toString(DEC);//attach the last number
-    
-    return Number(eval(e)).toString(BIN);
+    return Number(eval(e)).toString(CARRY);//change ans to present carry system
 }
 
 //detect if the number is valid in the carry system
