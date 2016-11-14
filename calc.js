@@ -62,11 +62,14 @@ window.onload = function () {
 
                 //any two operators shouldn't be placed continuously
                 if (isOperator(btnVal)) {
-                    if (!isOperator(equation[equation.length - 1]))
-                        if (main.value != '')//avoid invalid equation
-                            main.value += btnVal;
-                        else if (main.value == '' && btnVal == '-')//negative number
-                            main.value += btnVal;
+                    if(isOperator(equation[equation.length-1])) {
+                        back();//clear the old operator
+                    }
+                    
+                    if(main.value == '') {//negative number
+                        if(btnVal == '-') main.value += btnVal;
+                    }
+                    else main.value += btnVal;//replace with new operator
                 }
                 else if(isValidButton(btnVal)) {
                     main.value += btnVal;
@@ -169,7 +172,7 @@ function computeInCarry(equation) {
     }
     e += parseInt(tmp_num, CARRY).toString(DEC);//attach the last number
     
-    return Number(eval(e)).toString(CARRY);//change ans to present carry system
+    return Number(eval(e)).toString(CARRY);
 }
 
 //detect if the number is valid in the carry system
