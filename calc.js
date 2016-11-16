@@ -62,11 +62,15 @@ window.onload = function () {
 
                 //any two operators shouldn't be placed continuously
                 if (isOperator(btnVal)) {
-                    if (!isOperator(equation[equation.length - 1]))
-                        if (main.value != '')//avoid invalid equation
-                            main.value += btnVal;
-                        else if (main.value == '' && btnVal == '-')//negative number
-                            main.value += btnVal;
+                    if(isOperator(equation[equation.length-1])) {
+                        if(main.value != '-')//don't clear negative sign
+                            back();
+                    }
+                    
+                    if(main.value == '') {
+                        if(btnVal == '-') main.value += btnVal;
+                    }
+                    else if(main.value != '-') main.value += btnVal;
                 }
                 else if(isValidButton(btnVal)) {
                     main.value += btnVal;
@@ -103,10 +107,17 @@ function displayController (btnVal) {
 function carrySystem (ans) {
     if(Number(ans) != NaN) {
         var num = parseInt(ans, CARRY);
-        hex.value = num.toString(HEX);
         dec.value = num.toString(DEC);
-        oct.value = num.toString(OCT);
-        bin.value = num.toString(BIN);
+        if(num < 0) {
+            hex.value = (~(-num) + 1 >>> 0).toString(HEX);
+            oct.value = (~(-num) + 1 >>> 0).toString(OCT);
+            bin.value = (~(-num) + 1 >>> 0).toString(BIN);
+        }
+        else {
+            hex.value = num.toString(HEX);
+            oct.value = num.toString(OCT);
+            bin.value = num.toString(BIN);
+        }
     }
 }
 
@@ -169,7 +180,7 @@ function computeInCarry(equation) {
     }
     e += parseInt(tmp_num, CARRY).toString(DEC);//attach the last number
     
-    return Number(eval(e)).toString(CARRY);//change ans to present carry system
+    return Number(eval(e)).toString(CARRY);
 }
 
 //detect if the number is valid in the carry system
