@@ -63,13 +63,14 @@ window.onload = function () {
                 //any two operators shouldn't be placed continuously
                 if (isOperator(btnVal)) {
                     if(isOperator(equation[equation.length-1])) {
-                        back();//clear the old operator
+                        if(main.value != '-')//don't clear negative sign
+                            back();
                     }
                     
-                    if(main.value == '') {//negative number
+                    if(main.value == '') {
                         if(btnVal == '-') main.value += btnVal;
                     }
-                    else main.value += btnVal;//replace with new operator
+                    else if(main.value != '-') main.value += btnVal;
                 }
                 else if(isValidButton(btnVal)) {
                     main.value += btnVal;
