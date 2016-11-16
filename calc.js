@@ -107,10 +107,17 @@ function displayController (btnVal) {
 function carrySystem (ans) {
     if(Number(ans) != NaN) {
         var num = parseInt(ans, CARRY);
-        hex.value = num.toString(HEX);
         dec.value = num.toString(DEC);
-        oct.value = num.toString(OCT);
-        bin.value = num.toString(BIN);
+        if(num < 0) {
+            hex.value = (~(-num) + 1 >>> 0).toString(HEX);
+            oct.value = (~(-num) + 1 >>> 0).toString(OCT);
+            bin.value = (~(-num) + 1 >>> 0).toString(BIN);
+        }
+        else {
+            hex.value = num.toString(HEX);
+            oct.value = num.toString(OCT);
+            bin.value = num.toString(BIN);
+        }
     }
 }
 
