@@ -22,7 +22,6 @@
 /***********display***********/
 .show {
     position: relative;
-    right: 30px;
     text-align: right;
     margin: auto;
 }
@@ -30,7 +29,7 @@
 .show h4 {
     position: relative;
     display: inline-block;
-    right: 120px;
+    right: 10px;
     margin: 10px;
     color: white;
     background-color: #0055FF;
@@ -45,19 +44,21 @@ h4:hover {
 .show input {
     position: relative;
     display:inline-block;
-    right: 120px;  
+    right: 10px;
     text-align: left;
     font-size: 15px;
     border: none;
+    width: 300px;
 }
 
 #main {
     top: -15px;
-    right: 0px;
+    right: 25px;
     font-size: 30px;
     text-align: right;
     border: 1px solid black;
     border-radius:5px;
+    width: auto;
 }
 
 /*****************************/
